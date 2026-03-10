@@ -41,20 +41,34 @@ export default function App() {
   // Firebase Setup: Listen to collections
   useEffect(() => {
     setLoading(true);
-    const unsubscribeApps = onSnapshot(collection(db, "applications"), (snapshot) => {
-      setApps(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-      setLoading(false);
-    });
+    const unsubscribeApps = onSnapshot(
+      collection(db, "applications"),
+      (snapshot) => {
+        setApps(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        setLoading(false);
+      },
+      (error) => {
+        console.error("Firestore applications error:", error);
+        setLoading(false);
+      }
+    );
 
-    const unsubscribeLi = onSnapshot(collection(db, "contacts"), (snapshot) => {
-      setLi(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-    });
+    const unsubscribeLi = onSnapshot(
+      collection(db, "contacts"),
+      (snapshot) => {
+        setLi(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      },
+      (error) => {
+        console.error("Firestore contacts error:", error);
+      }
+    );
 
     return () => {
       unsubscribeApps();
       unsubscribeLi();
     };
   }, []);
+
 
   const filtered = useMemo(() => {
     return data.filter(r => {
